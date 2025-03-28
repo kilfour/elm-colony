@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.a9.az === region.bs.az)
+	if (region.bb.ay === region.bv.ay)
 	{
-		return 'on line ' + region.a9.az;
+		return 'on line ' + region.bb.ay;
 	}
-	return 'on lines ' + region.a9.az + ' through ' + region.bs.az;
+	return 'on lines ' + region.bb.ay + ' through ' + region.bv.ay;
 }
 
 
@@ -1857,8 +1857,8 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.co,
-		impl.cF,
+		impl.cn,
+		impl.cE,
 		impl.cC,
 		function() { return function() {} }
 	);
@@ -2720,8 +2720,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		E: func(record.E),
-		ba: record.ba,
-		a7: record.a7
+		bc: record.bc,
+		a9: record.a9
 	}
 });
 
@@ -2990,10 +2990,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.E;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ba;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.bc;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.a7) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.a9) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3943,11 +3943,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.co,
-		impl.cF,
+		impl.cn,
+		impl.cE,
 		impl.cC,
 		function(sendToApp, initialModel) {
-			var view = impl.cH;
+			var view = impl.cG;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3979,12 +3979,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.co,
-		impl.cF,
+		impl.cn,
+		impl.cE,
 		impl.cC,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.a8 && impl.a8(sendToApp)
-			var view = impl.cH;
+			var divertHrefToApp = impl.ba && impl.ba(sendToApp)
+			var view = impl.cG;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3992,12 +3992,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ca);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.cd);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.cE) && (_VirtualDom_doc.title = title = doc.cE);
+				(title !== doc.cD) && (_VirtualDom_doc.title = title = doc.cD);
 			});
 		}
 	);
@@ -4053,12 +4053,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.ct;
-	var onUrlRequest = impl.cu;
+	var onUrlChange = impl.cr;
+	var onUrlRequest = impl.cs;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		a8: function(sendToApp)
+		ba: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4074,9 +4074,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.bO === next.bO
-							&& curr.bz === next.bz
-							&& curr.bL.a === next.bL.a
+							&& curr.bS === next.bS
+							&& curr.bC === next.bC
+							&& curr.bP.a === next.bP.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4084,12 +4084,12 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		co: function(flags)
+		cn: function(flags)
 		{
-			return A3(impl.co, flags, _Browser_getUrl(), key);
+			return A3(impl.cn, flags, _Browser_getUrl(), key);
 		},
-		cH: impl.cH,
-		cF: impl.cF,
+		cG: impl.cG,
+		cE: impl.cE,
 		cC: impl.cC
 	});
 }
@@ -4156,17 +4156,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { ck: 'hidden', cb: 'visibilitychange' }
+		? { ck: 'hidden', ce: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { ck: 'mozHidden', cb: 'mozvisibilitychange' }
+		? { ck: 'mozHidden', ce: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { ck: 'msHidden', cb: 'msvisibilitychange' }
+		? { ck: 'msHidden', ce: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { ck: 'webkitHidden', cb: 'webkitvisibilitychange' }
-		: { ck: 'hidden', cb: 'visibilitychange' };
+		? { ck: 'webkitHidden', ce: 'webkitvisibilitychange' }
+		: { ck: 'hidden', ce: 'visibilitychange' };
 }
 
 
@@ -4247,12 +4247,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		bU: _Browser_getScene(),
-		b0: {
-			b2: _Browser_window.pageXOffset,
-			b3: _Browser_window.pageYOffset,
-			b1: _Browser_doc.documentElement.clientWidth,
-			bx: _Browser_doc.documentElement.clientHeight
+		bX: _Browser_getScene(),
+		b2: {
+			b4: _Browser_window.pageXOffset,
+			b5: _Browser_window.pageYOffset,
+			b3: _Browser_doc.documentElement.clientWidth,
+			bA: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4262,8 +4262,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		b1: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		bx: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		b3: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		bA: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4286,15 +4286,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			bU: {
-				b1: node.scrollWidth,
-				bx: node.scrollHeight
+			bX: {
+				b3: node.scrollWidth,
+				bA: node.scrollHeight
 			},
-			b0: {
-				b2: node.scrollLeft,
-				b3: node.scrollTop,
-				b1: node.clientWidth,
-				bx: node.clientHeight
+			b2: {
+				b4: node.scrollLeft,
+				b5: node.scrollTop,
+				b3: node.clientWidth,
+				bA: node.clientHeight
 			}
 		};
 	});
@@ -4324,18 +4324,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			bU: _Browser_getScene(),
-			b0: {
-				b2: x,
-				b3: y,
-				b1: _Browser_doc.documentElement.clientWidth,
-				bx: _Browser_doc.documentElement.clientHeight
+			bX: _Browser_getScene(),
+			b2: {
+				b4: x,
+				b5: y,
+				b3: _Browser_doc.documentElement.clientWidth,
+				bA: _Browser_doc.documentElement.clientHeight
 			},
-			ch: {
-				b2: x + rect.left,
-				b3: y + rect.top,
-				b1: rect.width,
-				bx: rect.height
+			ci: {
+				b4: x + rect.left,
+				b5: y + rect.top,
+				b3: rect.width,
+				bA: rect.height
 			}
 		};
 	});
@@ -4874,7 +4874,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {bw: fragment, bz: host, bJ: path, bL: port_, bO: protocol, bP: query};
+		return {bz: fragment, bC: host, bN: path, bP: port_, bS: protocol, bT: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5157,88 +5157,124 @@ var $author$project$Types$Hunger = 0;
 var $author$project$Types$Shelter = 1;
 var $author$project$Types$Socialize = 2;
 var $author$project$World$ava = {
-	bd: _List_Nil,
-	by: _List_Nil,
-	bE: 1,
-	cr: 'Ava',
-	aQ: _List_fromArray(
+	bB: _List_Nil,
+	bH: 1,
+	bJ: 'Ava',
+	az: _List_fromArray(
 		[
-			{au: 0, aI: 1},
-			{au: 1, aI: 2},
-			{au: 2, aI: 3}
+			{aN: 0, aI: 2},
+			{aN: 1, aI: 1},
+			{aN: 2, aI: 3}
 		]),
-	aj: _List_Nil
+	R: _List_Nil
 };
-var $author$project$World$buildShelter = {
-	cc: _List_Nil,
-	cj: _List_Nil,
-	cr: 'Build Shelter',
-	cs: _List_Nil,
-	cy: _List_fromArray(
-		[1]),
-	bT: _List_Nil
+var $author$project$Types$Build = function (a) {
+	return {$: 3, a: a};
 };
-var $author$project$World$apple = {
-	cg: 2,
-	cr: 'Apple',
-	cw: false,
-	bT: _List_fromArray(
+var $author$project$Types$NoOp = {$: 0};
+var $author$project$World$sleepInShelter = {
+	b7: $author$project$Types$NoOp,
+	bJ: 'Sleep in Shelter',
+	cq: _List_Nil,
+	cw: _List_fromArray(
 		[
-			{b6: 5, au: 0}
+			{aN: 1, cB: 5}
+		]),
+	cy: _List_fromArray(
+		[
+			{b9: 5, aN: 1}
 		])
 };
-var $author$project$World$getApple = {
-	cc: _List_Nil,
-	cj: _List_fromArray(
-		[$author$project$World$apple]),
-	cr: 'Get Apple',
-	cs: _List_Nil,
+var $author$project$World$shelter = {
+	bg: _List_fromArray(
+		[$author$project$World$sleepInShelter]),
+	bJ: 'Shelter'
+};
+var $author$project$World$buildShelter = {
+	b7: $author$project$Types$Build($author$project$World$shelter),
+	bJ: 'Build Shelter',
+	cq: _List_Nil,
+	cw: _List_fromArray(
+		[
+			{aN: 1, cB: 1}
+		]),
+	cy: _List_Nil
+};
+var $author$project$Types$Obtain = function (a) {
+	return {$: 1, a: a};
+};
+var $author$project$Types$Consume = function (a) {
+	return {$: 2, a: a};
+};
+var $author$project$World$eatApple = {
+	b7: $author$project$Types$Consume('Apple'),
+	bJ: 'Eat Apple',
+	cq: _List_Nil,
+	cw: _List_fromArray(
+		[
+			{aN: 0, cB: 10}
+		]),
 	cy: _List_fromArray(
-		[0]),
-	bT: _List_Nil
+		[
+			{b9: 5, aN: 0}
+		])
+};
+var $author$project$World$apple = {
+	bg: _List_fromArray(
+		[$author$project$World$eatApple]),
+	a2: 2,
+	bJ: 'Apple',
+	cu: false
+};
+var $author$project$World$getApple = {
+	b7: $author$project$Types$Obtain($author$project$World$apple),
+	bJ: 'Get Apple',
+	cq: _List_Nil,
+	cw: _List_fromArray(
+		[
+			{aN: 0, cB: 1}
+		]),
+	cy: _List_Nil
 };
 var $author$project$World$clearing = {
-	bd: _List_fromArray(
+	bg: _List_fromArray(
 		[$author$project$World$getApple, $author$project$World$buildShelter]),
-	cr: 'Clearing',
-	bV: 5
+	bJ: 'Clearing'
 };
 var $author$project$World$forestGlade = {
-	cm: 1,
-	cr: 'Forest Glade',
-	bV: 10,
-	cD: _List_fromArray(
+	a4: 1,
+	bJ: 'Forest Glade',
+	bd: _List_fromArray(
 		[$author$project$World$clearing])
 };
 var $author$project$World$starGaze = {
-	cc: _List_Nil,
-	cj: _List_Nil,
-	cr: 'Stargaze',
-	cs: _List_Nil,
-	cy: _List_fromArray(
-		[2]),
-	bT: _List_fromArray(
+	b7: $author$project$Types$NoOp,
+	bJ: 'Stargaze',
+	cq: _List_Nil,
+	cw: _List_fromArray(
 		[
-			{b6: 3, au: 2}
+			{aN: 2, cB: 1}
+		]),
+	cy: _List_fromArray(
+		[
+			{b9: 3, aN: 2}
 		])
 };
 var $author$project$World$rockyOutcrop = {
-	bd: _List_fromArray(
+	bg: _List_fromArray(
 		[$author$project$World$starGaze]),
-	cr: 'Rocky Outcrop',
-	bV: 3
+	bJ: 'Rocky Outcrop'
 };
 var $author$project$World$mountainBase = {
-	cm: 2,
-	cr: 'Mountain Base',
-	bV: 7,
-	cD: _List_fromArray(
+	a4: 2,
+	bJ: 'Mountain Base',
+	bd: _List_fromArray(
 		[$author$project$World$rockyOutcrop])
 };
 var $author$project$Main$initialModel = {
 	ap: _List_fromArray(
 		[$author$project$World$ava]),
-	af: _List_fromArray(
+	N: _List_fromArray(
 		[$author$project$World$forestGlade, $author$project$World$mountainBase])
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
@@ -5268,19 +5304,19 @@ var $author$project$Functions$actionScore = F2(
 			var _v0 = A2(
 				$elm$core$List$filter,
 				function (n) {
-					return _Utils_eq(n.au, m);
+					return _Utils_eq(n.aN, m.aN);
 				},
 				needs);
 			if (_v0.b) {
 				var n = _v0.a;
-				return n.aI;
+				return n.aI * m.cB;
 			} else {
 				return 0;
 			}
 		};
 		return $elm$core$List$sum(
-			A2($elm$core$List$map, scoreMotivation, action.cy)) - $elm$core$List$sum(
-			A2($elm$core$List$map, scoreMotivation, action.cs));
+			A2($elm$core$List$map, scoreMotivation, action.cw)) - $elm$core$List$sum(
+			A2($elm$core$List$map, scoreMotivation, action.cq));
 	});
 var $elm$core$List$append = F2(
 	function (xs, ys) {
@@ -5298,9 +5334,9 @@ var $elm$core$List$concatMap = F2(
 		return $elm$core$List$concat(
 			A2($elm$core$List$map, f, list));
 	});
-var $author$project$Types$Location = F4(
-	function (id, name, terrainFeatures, size) {
-		return {cm: id, cr: name, bV: size, cD: terrainFeatures};
+var $author$project$Types$Location = F3(
+	function (id, name, terrain) {
+		return {a4: id, bJ: name, bd: terrain};
 	});
 var $elm$core$List$head = function (list) {
 	if (list.b) {
@@ -5324,98 +5360,44 @@ var $author$project$Functions$getLocationById = F2(
 	function (id, locations) {
 		return A2(
 			$elm$core$Maybe$withDefault,
-			A4($author$project$Types$Location, id, 'Unknown', _List_Nil, 0),
+			A3($author$project$Types$Location, id, 'Unknown', _List_Nil),
 			$elm$core$List$head(
 				A2(
 					$elm$core$List$filter,
 					function (l) {
-						return _Utils_eq(l.cm, id);
+						return _Utils_eq(l.a4, id);
 					},
 					locations)));
 	});
 var $author$project$Functions$availableActions = F2(
 	function (locations, actor) {
-		return _Utils_ap(
-			actor.bd,
-			A2(
-				$elm$core$List$concatMap,
-				function ($) {
-					return $.bd;
-				},
-				A2($author$project$Functions$getLocationById, actor.bE, locations).cD));
-	});
-var $author$project$Types$decayStuff = function (s) {
-	return s.cw ? $elm$core$Maybe$Just(s) : ((s.cg <= 1) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-		_Utils_update(
-			s,
-			{cg: s.cg - 1})));
-};
-var $elm$core$List$maybeCons = F3(
-	function (f, mx, xs) {
-		var _v0 = f(mx);
-		if (!_v0.$) {
-			var x = _v0.a;
-			return A2($elm$core$List$cons, x, xs);
-		} else {
-			return xs;
-		}
-	});
-var $elm$core$List$filterMap = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			$elm$core$List$maybeCons(f),
-			_List_Nil,
-			xs);
-	});
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
-	});
-var $author$project$Functions$isDesireFulfilled = F2(
-	function (desire, stuffList) {
-		return A2(
-			$elm$core$List$any,
-			function (s) {
-				return A2(
-					$elm$core$List$any,
-					function (sat) {
-						return _Utils_eq(sat.au, desire);
-					},
-					s.bT);
+		var stuffActions = A2(
+			$elm$core$List$concatMap,
+			function ($) {
+				return $.bg;
 			},
-			stuffList);
+			actor.R);
+		var actorLocation = A2($author$project$Functions$getLocationById, actor.bH, locations);
+		var locationActions = A2(
+			$elm$core$List$concatMap,
+			function ($) {
+				return $.bg;
+			},
+			actorLocation.bd);
+		return _Utils_ap(locationActions, stuffActions);
 	});
 var $author$project$Functions$decayAndUpdateNeeds = function (actor) {
-	var decayedStuff = A2($elm$core$List$filterMap, $author$project$Types$decayStuff, actor.aj);
 	var updatedNeeds = A2(
 		$elm$core$List$map,
 		function (need) {
-			return A2($author$project$Functions$isDesireFulfilled, need.au, decayedStuff) ? need : _Utils_update(
+			return _Utils_update(
 				need,
 				{aI: need.aI + 1});
 		},
-		actor.aQ);
+		actor.az);
 	return _Utils_update(
 		actor,
-		{aQ: updatedNeeds, aj: decayedStuff});
+		{az: updatedNeeds});
 };
 var $author$project$Utils$maximumBy = F2(
 	function (f, list) {
@@ -5437,60 +5419,15 @@ var $author$project$Utils$maximumBy = F2(
 					xs));
 		}
 	});
-var $elm$core$List$partition = F2(
-	function (pred, list) {
-		var step = F2(
-			function (x, _v0) {
-				var trues = _v0.a;
-				var falses = _v0.b;
-				return pred(x) ? _Utils_Tuple2(
-					A2($elm$core$List$cons, x, trues),
-					falses) : _Utils_Tuple2(
-					trues,
-					A2($elm$core$List$cons, x, falses));
-			});
-		return A3(
-			$elm$core$List$foldr,
-			step,
-			_Utils_Tuple2(_List_Nil, _List_Nil),
-			list);
-	});
-var $author$project$Types$consumeStuff = F2(
-	function (matchers, stuffList) {
-		var step = F2(
-			function (matcher, _v3) {
-				var remaining = _v3.a;
-				var consumed = _v3.b;
-				var _v1 = A2($elm$core$List$partition, matcher, remaining);
-				if (_v1.a.b) {
-					var _v2 = _v1.a;
-					var toConsume = _v2.a;
-					var rest = _v2.b;
-					var others = _v1.b;
-					return _Utils_Tuple2(
-						_Utils_ap(others, rest),
-						A2($elm$core$List$cons, toConsume, consumed));
-				} else {
-					return _Utils_Tuple2(remaining, consumed);
-				}
-			});
-		var _v0 = A3(
-			$elm$core$List$foldl,
-			step,
-			_Utils_Tuple2(stuffList, _List_Nil),
-			matchers);
-		var result = _v0.a;
-		return result;
-	});
 var $author$project$Functions$fulfillNeeds = F2(
 	function (action, actor) {
 		var applySatisfaction = function (need) {
 			var _v0 = A2(
 				$elm$core$List$filter,
 				function (s) {
-					return _Utils_eq(s.au, need.au);
+					return _Utils_eq(s.aN, need.aN);
 				},
-				action.bT);
+				action.cy);
 			if (!_v0.b) {
 				return need;
 			} else {
@@ -5499,7 +5436,7 @@ var $author$project$Functions$fulfillNeeds = F2(
 					A2(
 						$elm$core$List$map,
 						function ($) {
-							return $.b6;
+							return $.b9;
 						},
 						sats));
 				var newUrgency = A2($elm$core$Basics$max, 0, need.aI - totalSatisfaction);
@@ -5511,48 +5448,136 @@ var $author$project$Functions$fulfillNeeds = F2(
 		return _Utils_update(
 			actor,
 			{
-				aQ: A2($elm$core$List$map, applySatisfaction, actor.aQ)
+				az: A2($elm$core$List$map, applySatisfaction, actor.az)
 			});
 	});
-var $author$project$Functions$performAction = F2(
-	function (action, actor) {
-		var withoutConsumed = _Utils_update(
-			actor,
+var $author$project$Functions$getActorLocation = F2(
+	function (actor, locations) {
+		return A2($author$project$Functions$getLocationById, actor.bH, locations);
+	});
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $author$project$Utils$replaceById = F4(
+	function (getId, targetId, newValue, list) {
+		return A2(
+			$elm$core$List$map,
+			function (item) {
+				return _Utils_eq(
+					getId(item),
+					targetId) ? newValue : item;
+			},
+			list);
+	});
+var $author$project$Functions$performAction = F3(
+	function (action, locations, actor) {
+		var _v0 = function () {
+			var _v1 = action.b7;
+			switch (_v1.$) {
+				case 0:
+					return _Utils_Tuple2(actor, locations);
+				case 2:
+					var name = _v1.a;
+					var stuff = A2(
+						$elm$core$List$filter,
+						function (a) {
+							return !_Utils_eq(a.bJ, name);
+						},
+						actor.R);
+					return _Utils_Tuple2(
+						_Utils_update(
+							actor,
+							{R: stuff}),
+						locations);
+				case 1:
+					var stuff = _v1.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							actor,
+							{
+								R: _Utils_ap(
+									actor.R,
+									_List_fromArray(
+										[stuff]))
+							}),
+						locations);
+				default:
+					var feature = _v1.a;
+					var location = A2($author$project$Functions$getActorLocation, actor, locations);
+					var updatedLocation = _Utils_update(
+						location,
+						{
+							bd: _Utils_ap(
+								location.bd,
+								_List_fromArray(
+									[feature]))
+						});
+					return _Utils_Tuple2(
+						actor,
+						A4(
+							$author$project$Utils$replaceById,
+							function ($) {
+								return $.a4;
+							},
+							location.a4,
+							updatedLocation,
+							locations));
+			}
+		}();
+		var actorAfterAction = _v0.a;
+		var updatedLocations = _v0.b;
+		var actorHistoryLogged = _Utils_update(
+			actorAfterAction,
 			{
-				aj: A2($author$project$Types$consumeStuff, action.cc, actor.aj)
+				bB: A2($elm$core$List$cons, action.bJ, actorAfterAction.bB)
 			});
-		var updatedActor = A2($author$project$Functions$fulfillNeeds, action, actor);
-		return _Utils_update(
-			updatedActor,
-			{
-				by: A2($elm$core$List$cons, action.cr, actor.by)
-			});
+		var updatedActor = A2($author$project$Functions$fulfillNeeds, action, actorHistoryLogged);
+		return _Utils_Tuple2(updatedActor, updatedLocations);
 	});
 var $author$project$Main$stepActor = F2(
 	function (locations, actor) {
-		var decayed = $author$project$Functions$decayAndUpdateNeeds(actor);
-		var possible = A2($author$project$Functions$availableActions, locations, decayed);
-		var _v0 = A2(
-			$author$project$Utils$maximumBy,
-			$author$project$Functions$actionScore(decayed.aQ),
-			possible);
-		if (!_v0.$) {
-			var best = _v0.a;
-			return A2($author$project$Functions$performAction, best, decayed);
-		} else {
-			return decayed;
-		}
+		var possible = A2($author$project$Functions$availableActions, locations, actor);
+		var _v0 = function () {
+			var _v1 = A2(
+				$author$project$Utils$maximumBy,
+				$author$project$Functions$actionScore(actor.az),
+				possible);
+			if (!_v1.$) {
+				var best = _v1.a;
+				return A3($author$project$Functions$performAction, best, locations, actor);
+			} else {
+				return _Utils_Tuple2(actor, locations);
+			}
+		}();
+		var updatedActor = _v0.a;
+		var updatedLocations = _v0.b;
+		return _Utils_Tuple2(
+			$author$project$Functions$decayAndUpdateNeeds(updatedActor),
+			updatedLocations);
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
+		var _v1 = A3(
+			$elm$core$List$foldl,
+			F2(
+				function (actor, _v2) {
+					var actorsAcc = _v2.a;
+					var locs = _v2.b;
+					var _v3 = A2($author$project$Main$stepActor, locs, actor);
+					var updatedActor = _v3.a;
+					var updatedLocs = _v3.b;
+					return _Utils_Tuple2(
+						A2($elm$core$List$cons, updatedActor, actorsAcc),
+						updatedLocs);
+				}),
+			_Utils_Tuple2(_List_Nil, model.N),
+			model.ap);
+		var updatedActors = _v1.a;
+		var finalLocations = _v1.b;
 		return _Utils_Tuple2(
 			_Utils_update(
 				model,
 				{
-					ap: A2(
-						$elm$core$List$map,
-						$author$project$Main$stepActor(model.af),
-						model.ap)
+					ap: $elm$core$List$reverse(updatedActors),
+					N: finalLocations
 				}),
 			$elm$core$Platform$Cmd$none);
 	});
@@ -5587,15 +5612,11 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $author$project$Functions$getActorLocation = F2(
-	function (actor, locations) {
-		return A2($author$project$Functions$getLocationById, actor.bE, locations);
-	});
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $author$project$Types$desireToString = function (desire) {
+var $author$project$Functions$desireToString = function (desire) {
 	switch (desire) {
 		case 0:
 			return 'Hunger';
@@ -5609,10 +5630,10 @@ var $elm$html$Html$h4 = _VirtualDom_node('h4');
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $author$project$Main$viewDecisionMaking = F2(
 	function (model, actor) {
-		var possibleActions = A2($author$project$Functions$availableActions, model.af, actor);
+		var possibleActions = A2($author$project$Functions$availableActions, model.N, actor);
 		var bestAction = A2(
 			$author$project$Utils$maximumBy,
-			$author$project$Functions$actionScore(actor.aQ),
+			$author$project$Functions$actionScore(actor.az),
 			possibleActions);
 		if (!bestAction.$) {
 			var action = bestAction.a;
@@ -5626,7 +5647,7 @@ var $author$project$Main$viewDecisionMaking = F2(
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Wants to: ' + action.cr)
+								$elm$html$Html$text('Wants to: ' + action.bJ)
 							])),
 						A2(
 						$elm$html$Html$p,
@@ -5635,7 +5656,7 @@ var $author$project$Main$viewDecisionMaking = F2(
 							[
 								$elm$html$Html$text(
 								'Score: ' + $elm$core$String$fromInt(
-									A2($author$project$Functions$actionScore, actor.aQ, action)))
+									A2($author$project$Functions$actionScore, actor.az, action)))
 							])),
 						A2(
 						$elm$html$Html$p,
@@ -5654,9 +5675,9 @@ var $author$project$Main$viewDecisionMaking = F2(
 									var _v1 = A2(
 										$elm$core$List$filter,
 										function (n) {
-											return _Utils_eq(n.au, m);
+											return _Utils_eq(n.aN, m.aN);
 										},
-										actor.aQ);
+										actor.az);
 									if (_v1.b) {
 										var n = _v1.a;
 										return n.aI;
@@ -5670,10 +5691,10 @@ var $author$project$Main$viewDecisionMaking = F2(
 									_List_fromArray(
 										[
 											$elm$html$Html$text(
-											$author$project$Types$desireToString(m) + (' (urgency: ' + ($elm$core$String$fromInt(urgency) + ')')))
+											$author$project$Functions$desireToString(m.aN) + (' (urgency: ' + ($elm$core$String$fromInt(urgency) + ')')))
 										]));
 							},
-							action.cy)),
+							action.cw)),
 						A2(
 						$elm$html$Html$h4,
 						_List_Nil,
@@ -5687,14 +5708,14 @@ var $author$project$Main$viewDecisionMaking = F2(
 						A2(
 							$elm$core$List$map,
 							function (a) {
-								var s = A2($author$project$Functions$actionScore, actor.aQ, a);
+								var s = A2($author$project$Functions$actionScore, actor.az, a);
 								return A2(
 									$elm$html$Html$li,
 									_List_Nil,
 									_List_fromArray(
 										[
 											$elm$html$Html$text(
-											a.cr + (' — Score: ' + $elm$core$String$fromInt(s)))
+											a.bJ + (' — Score: ' + $elm$core$String$fromInt(s)))
 										]));
 							},
 							possibleActions))
@@ -5709,14 +5730,13 @@ var $author$project$Main$viewDecisionMaking = F2(
 					]));
 		}
 	});
-var $author$project$Main$viewTerrainFeature = function (tf) {
+var $author$project$Main$viewTerrainFeature = function (terrain) {
 	return A2(
 		$elm$html$Html$li,
 		_List_Nil,
 		_List_fromArray(
 			[
-				$elm$html$Html$text(
-				'🧭 ' + (tf.cr + (' ( Size: ' + ($elm$core$String$fromInt(tf.bV) + ')')))),
+				$elm$html$Html$text('🧭 ' + terrain.bJ),
 				A2(
 				$elm$html$Html$ul,
 				_List_Nil,
@@ -5728,10 +5748,10 @@ var $author$project$Main$viewTerrainFeature = function (tf) {
 							_List_Nil,
 							_List_fromArray(
 								[
-									$elm$html$Html$text(a.cr)
+									$elm$html$Html$text(a.bJ)
 								]));
 					},
-					tf.bd))
+					terrain.bg))
 			]));
 };
 var $author$project$Main$viewLocation = function (loc) {
@@ -5745,13 +5765,12 @@ var $author$project$Main$viewLocation = function (loc) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(
-						'📍 ' + (loc.cr + (' (Size: ' + ($elm$core$String$fromInt(loc.bV) + ')'))))
+						$elm$html$Html$text('📍 ' + loc.bJ)
 					])),
 				A2(
 				$elm$html$Html$ul,
 				_List_Nil,
-				A2($elm$core$List$map, $author$project$Main$viewTerrainFeature, loc.cD))
+				A2($elm$core$List$map, $author$project$Main$viewTerrainFeature, loc.bd))
 			]));
 };
 var $author$project$Main$viewNeed = function (n) {
@@ -5761,26 +5780,17 @@ var $author$project$Main$viewNeed = function (n) {
 		_List_fromArray(
 			[
 				$elm$html$Html$text(
-				$author$project$Types$desireToString(n.au) + (' — Urgency: ' + $elm$core$String$fromInt(n.aI)))
+				$author$project$Functions$desireToString(n.aN) + (' — Urgency: ' + $elm$core$String$fromInt(n.aI)))
 			]));
 };
 var $author$project$Main$viewStuff = function (s) {
-	var satString = A2(
-		$elm$core$String$join,
-		', ',
-		A2(
-			$elm$core$List$map,
-			function (sat) {
-				return $author$project$Types$desireToString(sat.au) + ('(' + ($elm$core$String$fromInt(sat.b6) + ')'));
-			},
-			s.bT));
-	var dur = s.cw ? ' ♾️ Permanent' : (' — Durability: ' + $elm$core$String$fromInt(s.cg));
+	var dur = s.cu ? ' ♾️ Permanent' : (' — Durability: ' + $elm$core$String$fromInt(s.a2));
 	return A2(
 		$elm$html$Html$li,
 		_List_Nil,
 		_List_fromArray(
 			[
-				$elm$html$Html$text(s.cr + (' (Satisfies: ' + (satString + (')' + dur))))
+				$elm$html$Html$text(s.bJ + (' (Satisfies: )' + dur))
 			]));
 };
 var $author$project$Main$viewActor = F2(
@@ -5806,7 +5816,7 @@ var $author$project$Main$viewActor = F2(
 							_List_Nil,
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Actor: ' + actor.cr)
+									$elm$html$Html$text('Actor: ' + actor.bJ)
 								])),
 							A2(
 							$elm$html$Html$h3,
@@ -5816,7 +5826,7 @@ var $author$project$Main$viewActor = F2(
 									$elm$html$Html$text('At Location')
 								])),
 							$author$project$Main$viewLocation(
-							A2($author$project$Functions$getActorLocation, actor, model.af)),
+							A2($author$project$Functions$getActorLocation, actor, model.N)),
 							A2(
 							$elm$html$Html$h3,
 							_List_Nil,
@@ -5827,7 +5837,7 @@ var $author$project$Main$viewActor = F2(
 							A2(
 							$elm$html$Html$ul,
 							_List_Nil,
-							A2($elm$core$List$map, $author$project$Main$viewNeed, actor.aQ)),
+							A2($elm$core$List$map, $author$project$Main$viewNeed, actor.az)),
 							A2(
 							$elm$html$Html$h3,
 							_List_Nil,
@@ -5838,7 +5848,7 @@ var $author$project$Main$viewActor = F2(
 							A2(
 							$elm$html$Html$ul,
 							_List_Nil,
-							A2($elm$core$List$map, $author$project$Main$viewStuff, actor.aj))
+							A2($elm$core$List$map, $author$project$Main$viewStuff, actor.R))
 						])),
 					A2(
 					$elm$html$Html$div,
@@ -5877,7 +5887,7 @@ var $author$project$Main$viewActor = F2(
 												$elm$html$Html$text(entry)
 											]));
 								},
-								$elm$core$List$reverse(actor.by)))
+								actor.bB))
 						])),
 					A2(
 					$elm$html$Html$div,
@@ -5897,7 +5907,7 @@ var $author$project$Main$viewActor = F2(
 							A2(
 							$elm$html$Html$ul,
 							_List_Nil,
-							A2($elm$core$List$map, $author$project$Main$viewLocation, model.af))
+							A2($elm$core$List$map, $author$project$Main$viewLocation, model.N))
 						]))
 				]));
 	});
@@ -5926,18 +5936,18 @@ var $author$project$Main$view = function (model) {
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
 	{
-		co: $author$project$Main$init,
+		cn: $author$project$Main$init,
 		cC: function (_v0) {
 			return $elm$core$Platform$Sub$none;
 		},
-		cF: $author$project$Main$update,
-		cH: function (a) {
+		cE: $author$project$Main$update,
+		cG: function (a) {
 			return {
-				ca: _List_fromArray(
+				cd: _List_fromArray(
 					[
 						$author$project$Main$view(a)
 					]),
-				cE: 'Colony'
+				cD: 'Colony'
 			};
 		}
 	});

@@ -3,13 +3,12 @@ module World exposing (..)
 import Types exposing (..)
 
 
-eatApple : Action
-eatApple =
-    { name = "Eat Apple"
-    , positiveMotivations = [ Hunger ]
+getApple : Action
+getApple =
+    { name = "Get Apple"
+    , actionType = Obtain apple
+    , positiveMotivations = [ { desire = Hunger, strength = 1 } ]
     , negativeMotivations = []
-    , gives = []
-    , consumes = [ \s -> s.name == "Apple" ]
     , satisfies = []
     }
 
@@ -17,30 +16,28 @@ eatApple =
 apple : Stuff
 apple =
     { name = "Apple"
-    , satisfies = [ { desire = Hunger, amount = 5 } ]
     , durability = 2
     , permanent = False
+    , actions = [ eatApple ]
     }
 
 
-getApple : Action
-getApple =
-    { name = "Get Apple"
-    , positiveMotivations = [ Hunger ]
+eatApple : Action
+eatApple =
+    { name = "Eat Apple"
+    , actionType = Consume "Apple"
+    , positiveMotivations = [ { desire = Hunger, strength = 10 } ]
     , negativeMotivations = []
-    , gives = [ apple ]
-    , consumes = []
-    , satisfies = []
+    , satisfies = [ { desire = Hunger, amount = 5 } ]
     }
 
 
 starGaze : Action
 starGaze =
     { name = "Stargaze"
-    , positiveMotivations = [ Socialize ]
+    , actionType = NoOp
+    , positiveMotivations = [ { desire = Socialize, strength = 1 } ]
     , negativeMotivations = []
-    , gives = []
-    , consumes = []
     , satisfies = [ { desire = Socialize, amount = 3 } ]
     }
 
@@ -48,19 +45,34 @@ starGaze =
 buildShelter : Action
 buildShelter =
     { name = "Build Shelter"
-    , positiveMotivations = [ Shelter ]
+    , actionType = Build shelter
+    , positiveMotivations = [ { desire = Shelter, strength = 1 } ]
     , negativeMotivations = []
-    , gives = []
-    , consumes = []
     , satisfies = []
     }
 
 
-clearing : TerrainFeature
+shelter : Terrain
+shelter =
+    { name = "Shelter"
+    , actions = [ sleepInShelter ]
+    }
+
+
+sleepInShelter : Action
+sleepInShelter =
+    { name = "Sleep in Shelter"
+    , actionType = NoOp
+    , positiveMotivations = [ { desire = Shelter, strength = 5 } ]
+    , negativeMotivations = []
+    , satisfies = [ { desire = Shelter, amount = 5 } ]
+    }
+
+
+clearing : Terrain
 clearing =
     { name = "Clearing"
     , actions = [ getApple, buildShelter ]
-    , size = 5
     }
 
 
@@ -68,8 +80,7 @@ forestGlade : Location
 forestGlade =
     { id = 1
     , name = "Forest Glade"
-    , terrainFeatures = [ clearing ]
-    , size = 10
+    , terrain = [ clearing ]
     }
 
 
@@ -77,16 +88,14 @@ mountainBase : Location
 mountainBase =
     { id = 2
     , name = "Mountain Base"
-    , terrainFeatures = [ rockyOutcrop ]
-    , size = 7
+    , terrain = [ rockyOutcrop ]
     }
 
 
-rockyOutcrop : TerrainFeature
+rockyOutcrop : Terrain
 rockyOutcrop =
     { name = "Rocky Outcrop"
     , actions = [ starGaze ]
-    , size = 3
     }
 
 
@@ -95,11 +104,10 @@ ava =
     { name = "Ava"
     , locationId = 1
     , needs =
-        [ { desire = Hunger, urgency = 1 }
-        , { desire = Shelter, urgency = 2 }
+        [ { desire = Hunger, urgency = 2 }
+        , { desire = Shelter, urgency = 1 }
         , { desire = Socialize, urgency = 3 }
         ]
     , stuff = []
-    , actions = []
     , history = []
     }

@@ -1,16 +1,54 @@
 module Functions exposing (..)
 
 import Types exposing (..)
+import Utils exposing (..)
 
 
-isDesireFulfilled : Desire -> List Stuff -> Bool
-isDesireFulfilled desire stuffList =
-    List.any (\s -> List.any (\sat -> sat.desire == desire) s.satisfies) stuffList
+desireToString : Desire -> String
+desireToString desire =
+    case desire of
+        Hunger ->
+            "Hunger"
+
+        Shelter ->
+            "Shelter"
+
+        Socialize ->
+            "Socialize"
 
 
 giveStuffToActor : List Stuff -> Actor -> Actor
 giveStuffToActor newStuff actor =
     { actor | stuff = actor.stuff ++ newStuff }
+
+
+decayStuff : Stuff -> Maybe Stuff
+decayStuff s =
+    if s.permanent then
+        Just s
+
+    else if s.durability <= 1 then
+        Nothing
+
+    else
+        Just { s | durability = s.durability - 1 }
+
+
+consumeStuff : List (Stuff -> Bool) -> List Stuff -> List Stuff
+consumeStuff matchers stuffList =
+    let
+        step matcher ( remaining, consumed ) =
+            case List.partition matcher remaining of
+                ( toConsume :: rest, others ) ->
+                    ( others ++ rest, toConsume :: consumed )
+
+                ( [], _ ) ->
+                    ( remaining, consumed )
+
+        ( result, _ ) =
+            List.foldl step ( stuffList, [] ) matchers
+    in
+    result
 
 
 fulfillNeeds : Action -> Actor -> Actor
@@ -35,28 +73,51 @@ fulfillNeeds action actor =
     { actor | needs = List.map applySatisfaction actor.needs }
 
 
-performAction : Action -> Actor -> Actor
-performAction action actor =
+performAction : Action -> List Location -> Actor -> ( Actor, List Location )
+performAction action locations actor =
     let
-        withoutConsumed =
-            { actor | stuff = consumeStuff action.consumes actor.stuff }
+        ( actorAfterAction, updatedLocations ) =
+            case action.actionType of
+                NoOp ->
+                    ( actor, locations )
 
-        -- updatedActor =
-        --     giveStuffToActor action.gives withoutConsumed
-        --         |> fulfillNeeds action
+                Consume name ->
+                    let
+                        stuff =
+                            actor.stuff
+                                |> List.filter (\a -> a.name /= name)
+                    in
+                    ( { actor | stuff = stuff }, locations )
+
+                Obtain stuff ->
+                    ( { actor | stuff = actor.stuff ++ [ stuff ] }, locations )
+
+                Build feature ->
+                    let
+                        location =
+                            getActorLocation actor locations
+
+                        updatedLocation =
+                            { location | terrain = location.terrain ++ [ feature ] }
+                    in
+                    ( actor, replaceById .id location.id updatedLocation locations )
+
+        actorHistoryLogged =
+            { actorAfterAction | history = action.name :: actorAfterAction.history }
+
         updatedActor =
-            fulfillNeeds action actor
+            fulfillNeeds action actorHistoryLogged
     in
-    { updatedActor | history = action.name :: actor.history }
+    ( updatedActor, updatedLocations )
 
 
 actionScore : List Need -> Action -> Int
 actionScore needs action =
     let
         scoreMotivation m =
-            case List.filter (\n -> n.desire == m) needs of
+            case List.filter (\n -> n.desire == m.desire) needs of
                 n :: _ ->
-                    n.urgency
+                    n.urgency * m.strength
 
                 [] ->
                     0
@@ -67,27 +128,49 @@ actionScore needs action =
 
 availableActions : List Location -> Actor -> List Action
 availableActions locations actor =
-    actor.actions ++ List.concatMap .actions (getLocationById actor.locationId locations).terrainFeatures
+    let
+        actorLocation =
+            getLocationById actor.locationId locations
+
+        locationActions =
+            List.concatMap .actions actorLocation.terrain
+
+        stuffActions =
+            List.concatMap .actions actor.stuff
+    in
+    locationActions ++ stuffActions
+
+
+bestAction : Actor -> List Location -> Maybe Action
+bestAction actor locations =
+    maximumBy (actionScore actor.needs) (availableActions locations actor)
 
 
 decayAndUpdateNeeds : Actor -> Actor
 decayAndUpdateNeeds actor =
+    -- let
+    --     decayedStuff =
+    --         List.filterMap decayStuff actor.stuff
+    --     updatedNeeds =
+    --         List.map
+    --             (\need ->
+    --                 if isDesireFulfilled need.desire decayedStuff then
+    --                     need
+    --                 else
+    --                     { need | urgency = need.urgency + 1 }
+    --             )
+    --             actor.needs
+    -- in
+    -- { actor | stuff = decayedStuff, needs = updatedNeeds }
     let
-        decayedStuff =
-            List.filterMap decayStuff actor.stuff
-
         updatedNeeds =
             List.map
                 (\need ->
-                    if isDesireFulfilled need.desire decayedStuff then
-                        need
-
-                    else
-                        { need | urgency = need.urgency + 1 }
+                    { need | urgency = need.urgency + 1 }
                 )
                 actor.needs
     in
-    { actor | stuff = decayedStuff, needs = updatedNeeds }
+    { actor | needs = updatedNeeds }
 
 
 
@@ -97,7 +180,7 @@ decayAndUpdateNeeds actor =
 getLocationById : Int -> List Location -> Location
 getLocationById id locations =
     List.head (List.filter (\l -> l.id == id) locations)
-        |> Maybe.withDefault (Location id "Unknown" [] 0)
+        |> Maybe.withDefault (Location id "Unknown" [])
 
 
 getActorLocation : Actor -> List Location -> Location

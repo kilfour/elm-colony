@@ -20,3 +20,16 @@ maximumBy f list =
                     x
                     xs
                 )
+
+
+replaceById : (a -> Int) -> Int -> a -> List a -> List a
+replaceById getId targetId newValue list =
+    List.map
+        (\item ->
+            if getId item == targetId then
+                newValue
+
+            else
+                item
+        )
+        list

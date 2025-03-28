@@ -10,21 +10,21 @@ import Utils exposing (..)
 import World exposing (..)
 
 
-stepActor : List Location -> Actor -> Actor
+stepActor : List Location -> Actor -> ( Actor, List Location )
 stepActor locations actor =
     let
-        decayed =
-            decayAndUpdateNeeds actor
-
         possible =
-            availableActions locations decayed
-    in
-    case maximumBy (actionScore decayed.needs) possible of
-        Just best ->
-            performAction best decayed
+            availableActions locations actor
 
-        Nothing ->
-            decayed
+        ( updatedActor, updatedLocations ) =
+            case maximumBy (actionScore actor.needs) possible of
+                Just best ->
+                    performAction best locations actor
+
+                Nothing ->
+                    ( actor, locations )
+    in
+    ( decayAndUpdateNeeds updatedActor, updatedLocations )
 
 
 type alias Model =
@@ -49,7 +49,25 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick ->
-            ( { model | actors = List.map (stepActor model.locations) model.actors }, Cmd.none )
+            let
+                ( updatedActors, finalLocations ) =
+                    List.foldl
+                        (\actor ( actorsAcc, locs ) ->
+                            let
+                                ( updatedActor, updatedLocs ) =
+                                    stepActor locs actor
+                            in
+                            ( updatedActor :: actorsAcc, updatedLocs )
+                        )
+                        ( [], model.locations )
+                        model.actors
+            in
+            ( { model
+                | actors = List.reverse updatedActors
+                , locations = finalLocations
+              }
+            , Cmd.none
+            )
 
 
 view : Model -> Html Msg
@@ -76,7 +94,7 @@ viewActor model actor =
             [ Html.h3 [] [ text "Decision" ]
             , viewDecisionMaking model actor
             , Html.h3 [] [ text "Action History" ]
-            , ul [] (List.map (\entry -> li [] [ text entry ]) (List.reverse actor.history))
+            , ul [] (List.map (\entry -> li [] [ text entry ]) actor.history)
             ]
         , div [ class "section-column" ]
             [ Html.h3 [] [ text "All Locations" ]
@@ -99,22 +117,20 @@ viewDecisionMaking model actor =
             div []
                 [ Html.p [] [ text ("Wants to: " ++ action.name) ]
                 , Html.p [] [ text ("Score: " ++ String.fromInt (actionScore actor.needs action)) ]
-
-                --, Html.p [] [ text ("At Location: " ++ location.name ++ " — ") ]
                 , Html.p [] [ text "Motivations:" ]
                 , ul []
                     (List.map
                         (\m ->
                             let
                                 urgency =
-                                    case List.filter (\n -> n.desire == m) actor.needs of
+                                    case List.filter (\n -> n.desire == m.desire) actor.needs of
                                         n :: _ ->
                                             n.urgency
 
                                         [] ->
                                             0
                             in
-                            li [] [ text (desireToString m ++ " (urgency: " ++ String.fromInt urgency ++ ")") ]
+                            li [] [ text (desireToString m.desire ++ " (urgency: " ++ String.fromInt urgency ++ ")") ]
                         )
                         action.positiveMotivations
                     )
@@ -144,11 +160,6 @@ viewNeed n =
 viewStuff : Stuff -> Html msg
 viewStuff s =
     let
-        satString =
-            s.satisfies
-                |> List.map (\sat -> desireToString sat.desire ++ "(" ++ String.fromInt sat.amount ++ ")")
-                |> String.join ", "
-
         dur =
             if s.permanent then
                 " ♾️ Permanent"
@@ -156,22 +167,23 @@ viewStuff s =
             else
                 " — Durability: " ++ String.fromInt s.durability
     in
-    li [] [ text (s.name ++ " (Satisfies: " ++ satString ++ ")" ++ dur) ]
+    -- li [] [ text (s.name ++ " (Satisfies: " ++ satString ++ ")" ++ dur) ]
+    li [] [ text (s.name ++ " (Satisfies: )" ++ dur) ]
 
 
 viewLocation : Location -> Html msg
 viewLocation loc =
     div []
-        [ Html.h4 [] [ text ("📍 " ++ loc.name ++ " (Size: " ++ String.fromInt loc.size ++ ")") ]
-        , Html.ul [] (List.map viewTerrainFeature loc.terrainFeatures)
+        [ Html.h4 [] [ text ("📍 " ++ loc.name) ]
+        , Html.ul [] (List.map viewTerrainFeature loc.terrain)
         ]
 
 
-viewTerrainFeature : TerrainFeature -> Html msg
-viewTerrainFeature tf =
+viewTerrainFeature : Terrain -> Html msg
+viewTerrainFeature terrain =
     li []
-        [ text ("🧭 " ++ tf.name ++ " ( Size: " ++ String.fromInt tf.size ++ ")")
-        , Html.ul [] (List.map (\a -> li [] [ text a.name ]) tf.actions)
+        [ text ("🧭 " ++ terrain.name)
+        , Html.ul [] (List.map (\a -> li [] [ text a.name ]) terrain.actions)
         ]
 
 
