@@ -59,25 +59,47 @@ buildShelter =
 clearing : TerrainFeature
 clearing =
     { name = "Clearing"
-    , actions = [ getApple, starGaze, buildShelter ]
+    , actions = [ getApple, buildShelter ]
     , size = 5
     }
 
 
 forestGlade : Location
 forestGlade =
-    { name = "Forest Glade"
+    { id = 1
+    , name = "Forest Glade"
     , terrainFeatures = [ clearing ]
     , size = 10
+    }
+
+
+mountainBase : Location
+mountainBase =
+    { id = 2
+    , name = "Mountain Base"
+    , terrainFeatures = [ rockyOutcrop ]
+    , size = 7
+    }
+
+
+rockyOutcrop : TerrainFeature
+rockyOutcrop =
+    { name = "Rocky Outcrop"
+    , actions = [ starGaze ]
+    , size = 3
     }
 
 
 ava : Actor
 ava =
     { name = "Ava"
-    , needs = [ { desire = Hunger, urgency = 1 }, { desire = Shelter, urgency = 2 }, { desire = Socialize, urgency = 3 } ]
+    , locationId = 1
+    , needs =
+        [ { desire = Hunger, urgency = 1 }
+        , { desire = Shelter, urgency = 2 }
+        , { desire = Socialize, urgency = 3 }
+        ]
     , stuff = []
-    , location = forestGlade
     , actions = []
     , history = []
     }

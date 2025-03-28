@@ -99,9 +99,9 @@ type alias Action =
 
 type alias Actor =
     { name : String
+    , locationId : Int
     , needs : List Need
     , stuff : List Stuff
-    , location : Location
     , actions : List Action
     , history : List String
     }
@@ -112,7 +112,8 @@ type alias Actor =
 
 
 type alias Location =
-    { name : String
+    { id : Int
+    , name : String
     , terrainFeatures : List TerrainFeature
     , size : Int
     }

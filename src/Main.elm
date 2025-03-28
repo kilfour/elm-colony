@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Main exposing (main, viewNeed)
 
 import Browser
 import Functions exposing (..)
@@ -10,14 +10,14 @@ import Utils exposing (..)
 import World exposing (..)
 
 
-stepActor : Actor -> Actor
-stepActor actor =
+stepActor : List Location -> Actor -> Actor
+stepActor locations actor =
     let
         decayed =
             decayAndUpdateNeeds actor
 
         possible =
-            availableActions decayed
+            availableActions locations decayed
     in
     case maximumBy (actionScore decayed.needs) possible of
         Just best ->
@@ -28,12 +28,12 @@ stepActor actor =
 
 
 type alias Model =
-    { actors : List Actor }
+    { actors : List Actor, locations : List Location }
 
 
 init : Model
 init =
-    { actors = [ ava ] }
+    { actors = [ ava ], locations = [ forestGlade, mountainBase ] }
 
 
 
@@ -52,7 +52,7 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Tick ->
-            { model | actors = List.map stepActor model.actors }
+            { model | actors = List.map (stepActor model.locations) model.actors }
 
 
 
@@ -62,72 +62,79 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        (button [ onClick Tick ] [ text "Simulate Step" ] :: List.map viewActor model.actors)
+        (button [ onClick Tick ] [ text "Simulate Step" ]
+            :: List.map (\a -> viewActor model a) model.actors
+        )
 
 
-
--- VIEW ACTOR
-
-
-viewActor : Actor -> Html Msg
-viewActor actor =
-    let
-        possibleActions =
-            availableActions actor
-
-        bestAction =
-            maximumBy (actionScore actor.needs) possibleActions
-    in
+viewActor : Model -> Actor -> Html Msg
+viewActor model actor =
     div []
         [ Html.h2 [] [ text ("Actor: " ++ actor.name) ]
+        , Html.h3 [] [ text "At Location" ]
+        , viewLocation <| getActorLocation actor model.locations
         , Html.h3 [] [ text "Needs" ]
         , ul [] (List.map viewNeed actor.needs)
         , Html.h3 [] [ text "Stuff" ]
         , ul [] (List.map viewStuff actor.stuff)
         , Html.h3 [] [ text "Decision" ]
-        , case bestAction of
-            Just action ->
-                div []
-                    [ Html.p [] [ text ("Wants to: " ++ action.name) ]
-                    , Html.p [] [ text ("Score: " ++ String.fromInt (actionScore actor.needs action)) ]
-                    , Html.p [] [ text "Motivations:" ]
-                    , ul []
-                        (List.map
-                            (\m ->
-                                let
-                                    urgency =
-                                        case List.filter (\n -> n.desire == m) actor.needs of
-                                            n :: _ ->
-                                                n.urgency
-
-                                            [] ->
-                                                0
-                                in
-                                li [] [ text (desireToString m ++ " (urgency: " ++ String.fromInt urgency ++ ")") ]
-                            )
-                            action.positiveMotivations
-                        )
-                    , Html.h4 [] [ text "All Options:" ]
-                    , ul []
-                        (List.map
-                            (\a ->
-                                let
-                                    s =
-                                        actionScore actor.needs a
-                                in
-                                li [] [ text (a.name ++ " — Score: " ++ String.fromInt s) ]
-                            )
-                            possibleActions
-                        )
-                    ]
-
-            Nothing ->
-                Html.p [] [ text "No useful action to take." ]
+        , viewDecisionMaking model actor
         , Html.h3 [] [ text "Action History" ]
         , ul [] (List.map (\entry -> li [] [ text entry ]) (List.reverse actor.history))
-        , Html.h3 [] [ text "Location" ]
-        , viewLocation actor.location
+        , Html.h3 [] [ text "All Locations" ]
+        , ul [] (List.map viewLocation model.locations)
         ]
+
+
+viewDecisionMaking : Model -> Actor -> Html msg
+viewDecisionMaking model actor =
+    let
+        possibleActions =
+            availableActions model.locations actor
+
+        bestAction =
+            maximumBy (actionScore actor.needs) possibleActions
+    in
+    case bestAction of
+        Just action ->
+            div []
+                [ Html.p [] [ text ("Wants to: " ++ action.name) ]
+                , Html.p [] [ text ("Score: " ++ String.fromInt (actionScore actor.needs action)) ]
+
+                --, Html.p [] [ text ("At Location: " ++ location.name ++ " — ") ]
+                , Html.p [] [ text "Motivations:" ]
+                , ul []
+                    (List.map
+                        (\m ->
+                            let
+                                urgency =
+                                    case List.filter (\n -> n.desire == m) actor.needs of
+                                        n :: _ ->
+                                            n.urgency
+
+                                        [] ->
+                                            0
+                            in
+                            li [] [ text (desireToString m ++ " (urgency: " ++ String.fromInt urgency ++ ")") ]
+                        )
+                        action.positiveMotivations
+                    )
+                , Html.h4 [] [ text "All Options:" ]
+                , ul []
+                    (List.map
+                        (\a ->
+                            let
+                                s =
+                                    actionScore actor.needs a
+                            in
+                            li [] [ text (a.name ++ " — Score: " ++ String.fromInt s) ]
+                        )
+                        possibleActions
+                    )
+                ]
+
+        Nothing ->
+            Html.p [] [ text "No useful action to take." ]
 
 
 viewNeed : Need -> Html msg

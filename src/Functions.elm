@@ -59,9 +59,9 @@ actionScore needs action =
         - List.sum (List.map scoreMotivation action.negativeMotivations)
 
 
-availableActions : Actor -> List Action
-availableActions actor =
-    actor.actions ++ List.concatMap .actions actor.location.terrainFeatures
+availableActions : List Location -> Actor -> List Action
+availableActions locations actor =
+    actor.actions ++ List.concatMap .actions (getLocationById actor.locationId locations).terrainFeatures
 
 
 decayAndUpdateNeeds : Actor -> Actor
@@ -82,3 +82,18 @@ decayAndUpdateNeeds actor =
                 actor.needs
     in
     { actor | stuff = decayedStuff, needs = updatedNeeds }
+
+
+
+-- FIND LOCATION BY ID
+
+
+getLocationById : Int -> List Location -> Location
+getLocationById id locations =
+    List.head (List.filter (\l -> l.id == id) locations)
+        |> Maybe.withDefault (Location id "Unknown" [] 0)
+
+
+getActorLocation : Actor -> List Location -> Location
+getActorLocation actor locations =
+    getLocationById actor.locationId locations
