@@ -13,11 +13,11 @@ giveStuffToActor newStuff actor =
     { actor | stuff = actor.stuff ++ newStuff }
 
 
-fulfillDesires : Action -> Actor -> Actor
-fulfillDesires action actor =
+fulfillNeeds : Action -> Actor -> Actor
+fulfillNeeds action actor =
     let
-        fulfillDesire : Satisfaction -> List Need
-        fulfillDesire satisfaction =
+        fulfillNeed : Satisfaction -> List Need
+        fulfillNeed satisfaction =
             actor.needs
                 |> List.map
                     (\a ->
@@ -28,7 +28,7 @@ fulfillDesires action actor =
                             a
                     )
     in
-    { actor | needs = action.satisfies |> List.map fulfillDesire |> List.concat }
+    { actor | needs = action.satisfies |> List.map fulfillNeed |> List.concat }
 
 
 performAction : Action -> Actor -> Actor
@@ -39,7 +39,7 @@ performAction action actor =
 
         updatedActor =
             giveStuffToActor action.gives withoutConsumed
-                |> fulfillDesires action
+                |> fulfillNeeds action
     in
     { updatedActor | history = action.name :: actor.history }
 
