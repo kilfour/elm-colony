@@ -16,19 +16,23 @@ giveStuffToActor newStuff actor =
 fulfillNeeds : Action -> Actor -> Actor
 fulfillNeeds action actor =
     let
-        fulfillNeed : Satisfaction -> List Need
-        fulfillNeed satisfaction =
-            actor.needs
-                |> List.map
-                    (\a ->
-                        if a.desire == satisfaction.desire then
-                            { a | urgency = a.urgency - satisfaction.amount }
+        applySatisfaction : Need -> Need
+        applySatisfaction need =
+            case List.filter (\s -> s.desire == need.desire) action.satisfies of
+                [] ->
+                    need
 
-                        else
-                            a
-                    )
+                sats ->
+                    let
+                        totalSatisfaction =
+                            List.sum (List.map .amount sats)
+
+                        newUrgency =
+                            max 0 (need.urgency - totalSatisfaction)
+                    in
+                    { need | urgency = newUrgency }
     in
-    { actor | needs = action.satisfies |> List.map fulfillNeed |> List.concat }
+    { actor | needs = List.map applySatisfaction actor.needs }
 
 
 performAction : Action -> Actor -> Actor
@@ -37,9 +41,11 @@ performAction action actor =
         withoutConsumed =
             { actor | stuff = consumeStuff action.consumes actor.stuff }
 
+        -- updatedActor =
+        --     giveStuffToActor action.gives withoutConsumed
+        --         |> fulfillNeeds action
         updatedActor =
-            giveStuffToActor action.gives withoutConsumed
-                |> fulfillNeeds action
+            fulfillNeeds action actor
     in
     { updatedActor | history = action.name :: actor.history }
 

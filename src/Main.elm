@@ -31,32 +31,25 @@ type alias Model =
     { actors : List Actor, locations : List Location }
 
 
-init : Model
-init =
+initialModel : Model
+initialModel =
     { actors = [ ava ], locations = [ forestGlade, mountainBase ] }
 
 
-
--- MESSAGES
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( initialModel, Cmd.none )
 
 
 type Msg
     = Tick
 
 
-
--- UPDATE
-
-
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick ->
-            { model | actors = List.map (stepActor model.locations) model.actors }
-
-
-
--- VIEW
+            ( { model | actors = List.map (stepActor model.locations) model.actors }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -69,20 +62,26 @@ view model =
 
 viewActor : Model -> Actor -> Html Msg
 viewActor model actor =
-    div []
-        [ Html.h2 [] [ text ("Actor: " ++ actor.name) ]
-        , Html.h3 [] [ text "At Location" ]
-        , viewLocation <| getActorLocation actor model.locations
-        , Html.h3 [] [ text "Needs" ]
-        , ul [] (List.map viewNeed actor.needs)
-        , Html.h3 [] [ text "Stuff" ]
-        , ul [] (List.map viewStuff actor.stuff)
-        , Html.h3 [] [ text "Decision" ]
-        , viewDecisionMaking model actor
-        , Html.h3 [] [ text "Action History" ]
-        , ul [] (List.map (\entry -> li [] [ text entry ]) (List.reverse actor.history))
-        , Html.h3 [] [ text "All Locations" ]
-        , ul [] (List.map viewLocation model.locations)
+    div [ class "actor-container" ]
+        [ div [ class "section-column" ]
+            [ Html.h2 [] [ text ("Actor: " ++ actor.name) ]
+            , Html.h3 [] [ text "At Location" ]
+            , viewLocation <| getActorLocation actor model.locations
+            , Html.h3 [] [ text "Needs" ]
+            , ul [] (List.map viewNeed actor.needs)
+            , Html.h3 [] [ text "Stuff" ]
+            , ul [] (List.map viewStuff actor.stuff)
+            ]
+        , div [ class "section-column" ]
+            [ Html.h3 [] [ text "Decision" ]
+            , viewDecisionMaking model actor
+            , Html.h3 [] [ text "Action History" ]
+            , ul [] (List.map (\entry -> li [] [ text entry ]) (List.reverse actor.history))
+            ]
+        , div [ class "section-column" ]
+            [ Html.h3 [] [ text "All Locations" ]
+            , ul [] (List.map viewLocation model.locations)
+            ]
         ]
 
 
@@ -171,15 +170,20 @@ viewLocation loc =
 viewTerrainFeature : TerrainFeature -> Html msg
 viewTerrainFeature tf =
     li []
-        [ text ("🧭 " ++ tf.name ++ " (Size: " ++ String.fromInt tf.size ++ ")")
+        [ text ("🧭 " ++ tf.name ++ " ( Size: " ++ String.fromInt tf.size ++ ")")
         , Html.ul [] (List.map (\a -> li [] [ text a.name ]) tf.actions)
         ]
 
 
-
--- MAIN
-
-
 main : Program () Model Msg
 main =
-    Browser.sandbox { init = init, update = update, view = view }
+    Browser.document
+        { init = init
+        , update = update
+        , subscriptions = \_ -> Sub.none
+        , view =
+            \a ->
+                { title = "Colony"
+                , body = [ view a ]
+                }
+        }

@@ -1,0 +1,12 @@
+{
+  "name": "elm-colony",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "elm-live src/Main.elm --pushstate --dir=public --start-page=index.html --open \"--\" --output=./public/elm.js --optimize"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
